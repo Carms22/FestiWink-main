@@ -1,0 +1,135 @@
+<div class="card mb-3 detail rounded-0">
+  <img src={{festival.image}} class="m-4 rounded party" alt={{festival.name}} />
+  <div class="card-body detail-card">
+    <h1 class="card-title text-uppercase">{{festival.name}}</h1>
+    <p class="card-text"><small class="text-muted">{{festival.date}}</small></p>
+  </div>
+</div>
+<div class="detail-desc">
+  <i>{{festival.description}}</i>
+</div>
+<hr />
+
+<h3 class="info">Information</h3>
+<div class="info-more ">
+  <p><b>Place :</b> {{festival.location}}</p>
+  <p><b>Date :</b> {{festival.date}}</p>
+  <p><b>Price :</b> {{festival.price}}</p>
+  <div class="buttons-detail">
+    <a href="/festivals/" class="btn btn-dark mt-2 mb-3">Go Back</a>
+    {{#if sameUser}}
+    <form action="/festivals/{{festival._id}}/delete" method="POST">
+      <button type="submit"  class="btn btn-dark mt-2">
+        <i>Delete</i>
+      </button>
+    </form>
+    <a class="btn btn-dark mt-2 mb-3" href="/festivals/{{festival.id}}/edit">Edit</a>
+    {{/if}}
+
+    {{#if currentUser}}
+      {{#if isLike}}
+      <button class="like-btn-dislike btn btn-info mt-2 mb-3" data-id="{{festival._id}}">
+        <i class="like-btn">; )</i>
+      </button>
+    {{else}}
+      <button class="like-btn-dislike btn btn-dark mt-2 mb-3" data-id="{{festival._id}}">
+        <i class="like-btn">: (</i>
+      </button>
+      {{/if}}
+      <hr> 
+    {{/if}}
+  </div>
+
+  
+  {{#if  festival.comments }}
+   <hr>
+  <h3 class="m-3 comment">Comment:</h3>
+  <div class="comment-grid mb-5">
+
+    {{#each festival.comments as | comment |}}
+    <div class="comment-card comment-delete" data-id="{{comment._id}}">
+        <div class="container row row-cols-2 text-center">
+          <img class="comment-img" src="{{comment.user.image}}">
+          <h5 class="author">{{comment.author}}</h5>
+        </div>
+        <div class="card-text">
+        <hr>
+        <p style=" word-break: break-word;">{{comment.content}}</p>
+     {{!-- /////////////////////////////////////////////////////////////////////////// --}}
+        {{!-- {{#if sameCommentUser}} --}}
+        <a class="btn btn-danger comment-delete-button" data-id="{{comment._id}}"><i>Delete</i></a>
+        {{!-- {{/if}} --}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+  
+  
+    {{#if currentUser}}
+    <hr>
+    <div class="mb-4">
+      <h3 class="comment">Add a comment</h3>
+      <form action="/comment/{{festival._id}}" method="POST">
+         <div class="comment-form">
+          <label for="comment-author-username" class="comment-form-label"></label>
+          <input class="comment-form-name" type="t" name="author" id="comment-author-username" placeholder="Name :"/>
+          <textarea class="comment-form-txt" name="content" id="comment-content-input" maxlength ="50"></textarea>
+          <button type="submit" class="btn btn-dark mt-3 comment-btn ">Submit</button>
+        </div>
+      </form>
+    </div>
+  {{/if}}
+  </div>
+
+
+
+{{!-- LIKE --}}
+<script>
+  const likeNode = document.querySelectorAll('.like-btn-dislike');
+  for (let node of likeNode) {
+    node.addEventListener('click', () => {
+      const nodeId = node.dataset.id;
+      console.log(nodeId)
+      axios.post(`/like/${nodeId}`)
+        .then(responseFromApi => {
+          console.log('Success!', responseFromApi);
+          const selectedLike = document.querySelector(`.like-btn-dislike[data-id="${nodeId}"]`);
+          const smileOrNot = document.querySelector(`.like-btn-dislike[data-id="${nodeId}"]>i`);
+          if (responseFromApi.status == 200) {
+            console.log(smileOrNot)
+            smileOrNot.textContent = "; )"
+            selectedLike.classList.remove("btn-dark")
+            selectedLike.classList.add("btn-info")
+          }
+          if (responseFromApi.status == 204) {
+            smileOrNot.textContent = ": (";
+            selectedLike.classList.add("btn-dark")
+            selectedLike.classList.remove("btn-info")
+          }
+        })
+        .catch(error => console.log('Error!', error))
+    })
+  }
+</script>
+
+{{!-- COMMENT--}}
+<script>
+  const commentNode = document.querySelectorAll('.comment-delete-button');
+  for (let node of commentNode) {
+    node.addEventListener('click', () => {
+      const nodeId = node.dataset.id;
+  
+      axios.delete(`/comment/${nodeId}/delete`)
+        .then(responseFromApi => {
+          if (responseFromApi.status == 204) {
+            console.log(responseFromApi,"entro en axios.delete en el front")
+            document.querySelector(`.comment-delete[data-id="${nodeId}"]`).remove()
+          }
+        })
+        .catch(error => console.log('Error!', error))
+    })
+  }
+</script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>

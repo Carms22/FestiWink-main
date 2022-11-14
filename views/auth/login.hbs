@@ -1,0 +1,46 @@
+<div class="background-img-1">
+	
+</div>
+<div class="body">
+	<div class="cont">
+		<div class="item-container">
+			<h2 class="log-in">Login</h2>
+		</div>
+		<form action="/login" method="post">
+			<div class="form-input mb-2">
+				<label for="email" class="label">Email</label>
+				<input
+				type="text" name="email"
+				class="custom-form-control form-control py-2 ps-4 {{#if errors}}is-invalid{{/if}}"
+				placeholder="Email: user@example.org"
+				aria-label="User email"
+				value="{{user.email}}"					
+				/>
+			</div>
+			<div class="form-input mb-2">
+				<label for="password" class="label">Password</label>
+				<input
+				id="password-input"
+				type="password"
+				name="password"
+				class="custom-form-control form-control py-2 ps-4 {{#if errors}}is-invalid{{/if}}"
+				placeholder="Password"
+				aria-label="User password"
+				/>
+			</div>
+		
+	{{!-- {{#if message}}<div class="text-center mb-2">{{message}}</div>{{/if}}
+	{{#if errors}}<div class="text-danger text-center mb-2">{{ errors }}</div>{{/if}} --}}
+
+			<div>
+				<button type="submit" class="login-btn">Login</button>
+			</div>
+			<div class="d-grid gap-2 mt-2">
+				<a href="/login/google" class="btn btn-danger border-0 google login-btn">
+					<i class="fa fa-google"></i>
+					Login with Google
+				</a>
+			</div> 
+		</form>
+	</div>
+</div>
